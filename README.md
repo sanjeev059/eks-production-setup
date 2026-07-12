@@ -1,168 +1,308 @@
-# 🔧 EKS Production Setup
+# 🎬 Global Video Streaming Platform on AWS using Terraform & Amazon EKS
 
 ![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat&logo=amazonaws&logoColor=white)
 ![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=flat&logo=terraform&logoColor=white)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white)
 ![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=flat&logo=jenkins&logoColor=white)
 
-A production-grade AWS EKS cluster setup using Terraform — multi-AZ, autoscaling, CloudWatch monitoring, and Jenkins CI/CD pipeline. Built from real-world experience deploying MyJio, JioCinema, and JioTalkies at Reliance Jio.
+---
+
+# 📌 Overview
+
+This repository demonstrates the design and implementation of a **production-inspired global video streaming platform** built on **Amazon Web Services (AWS)** using **Terraform**, **Amazon EKS**, and Kubernetes.
+
+The objective is to design a cloud platform capable of supporting **15 million concurrent users globally** while following modern Platform Engineering and Infrastructure as Code (IaC) best practices.
+
+The project is being built incrementally, with each infrastructure component designed, implemented, documented, and validated.
 
 ---
 
-## 🏗️ Architecture
+# 🎯 Business Problem
+
+A media company expects its video streaming platform to grow to **15 million concurrent users worldwide** within the next six months.
+
+The platform must provide:
+
+- Global low latency
+- High availability
+- Zero downtime deployments
+- Automatic scaling
+- Secure infrastructure
+- Disaster recovery
+- Infrastructure as Code
+
+---
+
+# ✅ Functional Requirements
+
+- User Authentication
+- User Management
+- Video Upload
+- Video Streaming
+- Search
+- Recommendation Engine
+- Billing
+- Notifications
+
+---
+
+# ✅ Non Functional Requirements
+
+- 15 Million Concurrent Users
+- 99.99% Availability
+- Multi Availability Zone Deployment
+- Global Content Delivery
+- Fault Tolerant
+- Low Latency
+- Secure Secret Management
+- Infrastructure as Code
+- Automatic Scaling
+
+---
+
+# 🏗️ High Level Architecture
 
 ```
-                          ┌─────────────────────────────────┐
-                          │         AWS Cloud (ap-south-1)  │
-                          │                                  │
-                          │   ┌─────────┐  ┌─────────┐      │
-          Internet ───────┼──▶│   ALB   │  │Route 53 │      │
-                          │   └────┬────┘  └─────────┘      │
-                          │        │                         │
-                          │   ┌────▼────────────────────┐   │
-                          │   │        VPC               │   │
-                          │   │  ┌──────────────────┐   │   │
-                          │   │  │  EKS Cluster     │   │   │
-                          │   │  │  ┌────┐ ┌────┐   │   │   │
-                          │   │  │  │ AZ1│ │ AZ2│   │   │   │
-                          │   │  │  └────┘ └────┘   │   │   │
-                          │   │  └──────────────────┘   │   │
-                          │   │  ┌──────┐  ┌─────────┐  │   │
-                          │   │  │  RDS │  │CloudWatch│  │   │
-                          │   │  └──────┘  └─────────┘  │   │
-                          │   └─────────────────────────┘   │
-                          └─────────────────────────────────┘
+                    Global Users
+                          │
+                     Amazon Route53
+                          │
+                   AWS WAF + Shield
+                          │
+                    Amazon CloudFront
+                          │
+               Application Load Balancer
+                          │
+          AWS Load Balancer Controller
+                          │
+                  Amazon EKS Cluster
+        ┌─────────────────────────────────────┐
+        │ Authentication Service              │
+        │ User Service                        │
+        │ Video Metadata Service              │
+        │ Billing Service                     │
+        │ Notification Service                │
+        │ Search Service                      │
+        │ Recommendation Service              │
+        └─────────────────────────────────────┘
+                │          │          │
+             Redis      Aurora      Vault
+                │
+        Video Processing Workers
+                │
+             Amazon S3
+                │
+          Amazon CloudFront
 ```
 
 ---
 
-## ✨ Features
+# ☁️ AWS Services
 
-- **Multi-AZ EKS cluster** — worker nodes spread across 2 availability zones
-- **Terraform IaC** — 100% infrastructure as code, no manual clicks
-- **Auto Scaling** — HPA + Cluster Autoscaler for dynamic workload handling
-- **Jenkins CI/CD** — automated build, test, and deploy pipeline
-- **CloudWatch monitoring** — metrics, logs, and alarms for production observability
-- **IAM least privilege** — scoped roles for nodes, pods, and CI/CD
-- **Private subnets** — worker nodes not exposed to internet directly
-- **ALB Ingress** — AWS Load Balancer Controller for traffic routing
+| Service | Purpose |
+|----------|---------|
+| Amazon VPC | Isolated Network |
+| Public Subnets | ALB, NAT Gateway |
+| Private Subnets | Amazon EKS Worker Nodes |
+| Internet Gateway | Internet Access |
+| NAT Gateway | Outbound Internet Access |
+| Route Tables | Traffic Routing |
+| Security Groups | Network Security |
+| IAM | Identity & Access Management |
+| Amazon EKS | Kubernetes Platform |
+| Amazon ECR | Docker Image Repository |
+| Amazon S3 | Video Storage |
+| Amazon CloudFront | Global Content Delivery |
+| Amazon Route53 | DNS |
+| AWS WAF | Web Application Firewall |
+| Amazon Aurora PostgreSQL | Metadata Database |
+| Amazon ElastiCache Redis | Application Cache |
+| CloudWatch | Monitoring |
+| HashiCorp Vault | Secrets Management |
 
 ---
 
-## 📁 Project Structure
+# 📁 Repository Structure
 
 ```
 eks-production-setup/
+
+├── architecture/
 ├── terraform/
-│   ├── main.tf          # Provider config, backend
-│   ├── vpc.tf           # VPC, subnets, NAT gateway
-│   ├── eks.tf           # EKS cluster + node groups
-│   ├── monitoring.tf    # CloudWatch dashboards + alarms
-│   ├── variables.tf     # Input variables
-│   └── outputs.tf       # Output values
+│   ├── backend/
+│   ├── environments/
+│   └── modules/
 ├── kubernetes/
-│   ├── deployment.yaml  # Sample app deployment
-│   ├── service.yaml     # ClusterIP + ALB service
-│   └── hpa.yaml         # Horizontal pod autoscaler
-├── jenkins/
-│   └── Jenkinsfile      # Full CI/CD pipeline
 ├── docs/
-│   └── architecture.md  # Detailed architecture decisions
-└── .github/
-    └── workflows/
-        └── ci.yml       # GitHub Actions lint + validate
+└── README.md
 ```
 
 ---
 
-## 🚀 Quick Start
+# 🚀 Infrastructure Components
 
-### Prerequisites
-- AWS CLI configured (`aws configure`)
-- Terraform >= 1.5
-- kubectl installed
-- AWS account with sufficient permissions
+- Terraform Backend
+- Amazon VPC
+- Public & Private Subnets
+- Internet Gateway
+- NAT Gateway
+- Route Tables
+- Security Groups
+- IAM
+- Amazon EKS
+- Managed Node Groups
+- Amazon ECR
+- Amazon S3
+- CloudFront
+- Route53
+- AWS WAF
+- Aurora PostgreSQL
+- Redis
 
-### Deploy
+---
 
-```bash
-# Clone the repo
-git clone https://github.com/sanjeev059/eks-production-setup
-cd eks-production-setup/terraform
+# ☸️ Kubernetes Components
 
-# Initialise Terraform
-terraform init
+- Deployments
+- Services
+- Ingress
+- ConfigMaps
+- Vault Integration
+- Horizontal Pod Autoscaler
+- AWS Load Balancer Controller
 
-# Review what will be created
-terraform plan
+---
 
-# Deploy (takes ~15 minutes)
-terraform apply
+# 🔄 CI/CD Pipeline
+
+```
+Developer
+
+↓
+
+GitHub
+
+↓
+
+Jenkins
+
+↓
+
+Docker Build
+
+↓
+
+Amazon ECR
+
+↓
+
+Terraform
+
+↓
+
+Amazon EKS
+
+↓
+
+Rolling Deployment
 ```
 
-### Connect to cluster
+---
 
-```bash
-# Update kubeconfig
-aws eks update-kubeconfig --name eks-production --region ap-south-1
+# 📊 Monitoring & Logging
 
-# Verify nodes are ready
-kubectl get nodes
-
-# Deploy sample app
-kubectl apply -f ../kubernetes/
-```
+- Prometheus
+- Grafana
+- Fluent Bit
+- Amazon CloudWatch
+- AlertManager
 
 ---
 
-## ⚙️ Configuration
+# 🔐 Security
 
-Edit `terraform/variables.tf` to customise:
-
-```hcl
-variable "cluster_name"    { default = "eks-production" }
-variable "region"          { default = "ap-south-1" }
-variable "node_count_min"  { default = 2 }
-variable "node_count_max"  { default = 10 }
-variable "instance_type"   { default = "t3.medium" }
-```
+- Worker Nodes in Private Subnets
+- Security Groups
+- IAM Least Privilege
+- IAM Roles for Service Accounts (IRSA)
+- TLS Encryption
+- HashiCorp Vault
+- Kubernetes RBAC
 
 ---
 
-## 📊 Monitoring
+# 📈 Scalability Strategy
 
-CloudWatch dashboards included for:
-- Node CPU and memory utilisation
-- Pod restart counts
-- ALB request count and latency
-- Custom application metrics
+The platform is designed to support **15 million concurrent users** using:
 
----
-
-## 🔒 Security
-
-- Worker nodes in private subnets only
-- NAT Gateway for outbound internet access
-- IAM roles with least privilege per service
-- Secrets managed via AWS Secrets Manager
-- Pod Security Standards enforced
+- Amazon CloudFront edge caching
+- Horizontal Pod Autoscaler
+- Cluster Autoscaler
+- Stateless Microservices
+- Amazon S3 Object Storage
+- Aurora Read Replicas
+- Redis Caching
+- Multi Availability Zone Deployment
 
 ---
 
-## 💡 Lessons from Jio Production
+# 📚 Documentation
 
-This setup is inspired by real patterns used to run MyJio and JioCinema on AWS EKS:
-- Always use multi-AZ — single AZ failures happen
-- HPA alone is not enough — Cluster Autoscaler handles node-level scaling
-- CloudWatch log groups need retention policies — costs blow up without them
-- IAM roles for service accounts (IRSA) — never use node-level IAM for pod permissions
+Additional documentation is available in the `architecture` directory.
 
----
-
-## 📄 License
-
-MIT
+- Architecture Overview
+- Request Flow
+- Deployment Flow
+- Failure Scenarios
+- Design Decisions
 
 ---
 
-*Part of my AI/MLOps portfolio — [github.com/sanjeev059](https://github.com/sanjeev059)*
+# 🛣️ Project Roadmap
+
+- [x] Project Structure
+- [x] Architecture Design
+- [ ] Terraform Backend
+- [ ] VPC & Networking
+- [ ] Security Groups
+- [ ] IAM
+- [ ] Amazon EKS
+- [ ] Managed Node Groups
+- [ ] Amazon ECR
+- [ ] Amazon S3
+- [ ] CloudFront
+- [ ] Route53
+- [ ] AWS WAF
+- [ ] Aurora PostgreSQL
+- [ ] Redis
+- [ ] Vault Integration
+- [ ] Jenkins CI/CD
+- [ ] Monitoring Stack
+- [ ] Production Deployment
+
+---
+
+# 🎯 Learning Objectives
+
+This project demonstrates practical implementation of:
+
+- Terraform
+- Amazon Web Services
+- Amazon EKS
+- Kubernetes
+- Infrastructure as Code
+- Platform Engineering
+- Cloud Architecture
+- High Availability
+- Disaster Recovery
+- System Design
+
+---
+
+# 👨‍💻 Author
+
+**Sanjeev Desai**
+
+Senior DevOps Engineer
+
+This repository is maintained as part of continuous learning, production architecture practice, and cloud platform engineering.

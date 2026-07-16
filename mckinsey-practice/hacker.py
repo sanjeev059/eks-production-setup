@@ -10,6 +10,16 @@
 # ✅ Trapping Rain Water
 # from operator import truediv
 
+
+def longest_substring_without_repeating_characters():
+    seen = set()
+    str_sub = "abca"
+    for ch in str_sub:
+        if ch in seen:
+            print(ch, "is duplicate")
+        else:
+            seen.add(ch)
+
 # a = [1,2,3,4,5]
 # target = 8
 def two_sum(a, target):
@@ -110,20 +120,22 @@ def  move_all_zeros(a):
 
 if __name__ == '__main__':
 
-    s1 = "sanjeeev"
-    s2 = "sanjeev"
-    all_valid_removal_indices(s1, s2)
+    # s1 = "sanjeeev"
+    # s2 = "sanjeev"
+    # all_valid_removal_indices(s1, s2)
+    #
+    # arr1 = [1, 3, 5, 7]
+    # arr2 = [2, 4, 6, 8]
+    # merge_two_sorted_arrays(arr1, arr2)
+    #
+    # numbers = [1, 1, 2, 2, 3, 3, 4]
+    # remove_duplicates_from_sorted_array(numbers)
+    # numbers = [0,1,0,3,12]
+    # move_all_zeros(numbers)
+    #
+    # a = [1,2,3,4,5]
+    # target = 8
+    # omd = two_sum(a, target)
+    # print(omd)
 
-    arr1 = [1, 3, 5, 7]
-    arr2 = [2, 4, 6, 8]
-    merge_two_sorted_arrays(arr1, arr2)
-
-    numbers = [1, 1, 2, 2, 3, 3, 4]
-    remove_duplicates_from_sorted_array(numbers)
-    numbers = [0,1,0,3,12]
-    move_all_zeros(numbers)
-
-    a = [1,2,3,4,5]
-    target = 8
-    omd = two_sum(a, target)
-    print(omd)
+    longest_substring_without_repeating_characters()

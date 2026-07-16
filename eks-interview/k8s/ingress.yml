@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fastapi-ingress
+  namespace: ks-interview
+  labels:
+    app.kubernetes.io/instance: fastapi
+    app.kubernetes.io/name: fastapi
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: fastapi-service
+            port:
+              number: 8000

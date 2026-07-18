@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: fastapi-deployment
+  namespace: ks-interview
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: fastapi
+
+  template:
+    metadata:
+      labels:
+        app: fastapi
+
+    spec:
+      containers:
+      - name: fastapi
+        image: interview-app:v4
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: fastapi-configmap
+        - secretRef:
+            name: fastapi-secret

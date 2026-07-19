@@ -41,7 +41,7 @@ resource "aws_ebs_volume" "example" {
 }
 
 resource "aws_volume_attachment" "ebs_att" {
-    count = 3
+  count = 3
   device_name = "/dev/sdh"
   volume_id   = aws_ebs_volume.example[count.index].id
   instance_id = aws_instance.example_instance[count.index].id

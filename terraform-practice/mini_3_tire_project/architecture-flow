@@ -1,0 +1,51 @@
+Business Requirement
+
+Your company is launching an e-commerce application.
+
+The application must be highly available across 2 Availability Zones.
+
+The architecture consists of:
+
+A public-facing Application Load Balancer (ALB)
+A web tier
+An application tier
+A MySQL database
+
+Infrastructure Requirements
+Networking
+One VPC
+Two Public Subnets
+Two Private App Subnets
+Two Private DB Subnets
+One Internet Gateway
+One NAT Gateway
+Route tables with the appropriate associations
+
+Web Tier
+Two EC2 instances
+One EC2 in each public subnet
+Both should receive traffic from the ALB
+Application Tier
+Two EC2 instances
+One EC2 in each private app subnet
+The web tier should communicate with the app tier
+
+Database Tier
+One MySQL RDS instance
+It should be deployed in the private DB subnets
+Only the application tier should be able to connect to it
+
+Security
+Web Security Group
+App Security Group
+Database Security Group
+Load Balancer
+One Application Load Balancer
+One Target Group
+One Listener
+Register only the web servers with the Target Group
+Business Constraints
+Infrastructure should be easy to scale.
+The design should follow Terraform best practices.
+Avoid unnecessary duplication.
+Future expansion to 4 or 6 web servers should require minimal code changes.

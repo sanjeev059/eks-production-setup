@@ -1,0 +1,11 @@
+2026-07-22 10:00:01 INFO Application Started
+2026-07-22 10:00:15 INFO User Login
+2026-07-22 10:01:20 ERROR Database Connection Failed
+2026-07-22 10:01:45 INFO Health Check Passed
+2026-07-22 10:02:10 ERROR Redis Timeout
+2026-07-22 10:02:30 INFO Payment Received
+2026-07-22 10:03:15 ERROR Disk Space Low
+2026-07-22 10:03:50 INFO Request Completed
+2026-07-22 10:04:10 ERROR Kafka Connection Failed
+2026-07-22 10:04:30 INFO Metrics Sent
+2026-07-22 10:05:20 ERROR Out Of Memory
